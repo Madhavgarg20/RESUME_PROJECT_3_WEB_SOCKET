@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tilt+Warp&display=swap" rel="stylesheet">
+
+</head>
+
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: #f0f4f8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-family: 'Tilt Warp', cursive;
+    }
+
+    h1 {
+        margin: 40px 0;
+        font-size: 4rem;
+        color: #5fdadc;
+        -webkit-text-stroke: 1px #333;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    input {
+        margin-bottom: 20px;
+        padding: 10px;
+        font-size: 1.2rem;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        width: 300px;
+    }
+
+    button {
+        font-size: 1.2rem;
+        padding: 10px 20px;
+        margin-bottom: 20px;
+        background-color: #333;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #555;
+    }
+
+    img {
+        width: 50px;
+        display: block;
+        margin: 20px auto;
+    }
+
+    #cont {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    max-width: 400px;
+    /* Remove margin-top here, it's not needed */
+}
+
+    .btn {
+        font-size: 2rem;
+        width: 100px;
+        height: 100px;
+        cursor: pointer;
+        margin: 0;
+        background-color: #e0e0e0;
+        border-radius: 10px;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        border: 2px solid #ccc;
+    }
+
+    .btn:hover {
+        background-color: #d4d4d4;
+        transform: scale(1.05);
+    }
+
+    #find {
+        font-size: 1.5rem;
+        color: white;
+        cursor: pointer;
+        padding: 10px;
+        border-radius: 10px;
+        width: 250px;
+        background-color: #007bff;
+        transition: background-color 0.3s ease;
+    }
+
+    #find:hover {
+        background-color: #0056b3;
+    }
+
+    button.enabled {
+        opacity: 1;
+    }
+
+    p {
+        font-size: 1.8rem;
+        color: #333;
+    }
+
+    #userCont,
+    #oppNameCont {
+        font-size: 1.2rem;
+        color: #555;
+    }
+
+    #whosTurn {
+        font-size: 2rem;
+        color: #ff5733;
+        font-weight: bold;
+        margin-top: 20px;
+    }
+
+    #bigcont {
+    display: flex;
+    justify-content: center;
+    align-items: center;     
+    margin-top: 30px;
+}
+#winnerScreen {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    display: none; /* Initially hidden */
+    z-index: 1000;
+    opacity: 0;
+    animation: fadeIn 1s forwards, bounce 1s 1s infinite; /* Animation */
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+}
+
+#winnerText {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+</style>
+
+<body>
+    <div style="text-align: center;">
+        <h1 style="font-family: Georgia, 'Times New Roman', Times, serif;">Tic-Tac-Toe</h1>
+
+        <div style="display: flex; width: 95vw; position: relative;">
+            <p id="userCont">You: <span id="user"></span></p>
+            <p style="position: absolute; right: 0;" id="oppNameCont">Opponent: <span id="oppName"></span></p>
+        </div>
+
+        <br>
+        <p id="valueCont">You are playing as <span id="value"></span></p>
+        <br>
+        <p id="whosTurn">X's Turn</p>
+
+        <div>
+            <p style="font-size: 1.2rem;" id="enterName">Enter your name:</p>
+            <input type="text" placeholder="Name" id="name" autocomplete="off">
+        </div>
+        
+        <button id="find">Search for a player</button>
+        <img id="loading" src="loading.gif" alt="Loading...">
+
+        <div id="bigcont">
+            <div id="cont">
+                <button id="btn1" class="btn"></button>
+                <button id="btn2" class="btn"></button>
+                <button id="btn3" class="btn"></button>
+                <button id="btn4" class="btn"></button>
+                <button id="btn5" class="btn"></button>
+                <button id="btn6" class="btn"></button>
+                <button id="btn7" class="btn"></button>
+                <button id="btn8" class="btn"></button>
+                <button id="btn9" class="btn"></button>
+            </div>
+        </div>
+        <div id="winnerScreen">
+            <h2 id="winnerText"></h2>
+        </div>
+        
+    </div>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+
+
+<script>
+    document.getElementById("loading").style.display = "none"
+    document.getElementById("bigcont").style.display = "none"
+    document.getElementById("userCont").style.display = "none"
+    document.getElementById("oppNameCont").style.display = "none"
+    document.getElementById("valueCont").style.display = "none"
+    document.getElementById("whosTurn").style.display = "none"
+
+    const socket = io();
+
+    let name;
+
+    document.getElementById('find').addEventListener("click", function () {
+        name = document.getElementById("name").value
+        document.getElementById("user").innerText = name
+        if (name == null || name == '') {
+            alert("Please enter a name")
+        }
+        else {
+
+            socket.emit("find", { name: name })
+
+            document.getElementById("loading").style.display = "block"
+            document.getElementById("find").disabled = true;
+
+        }
+    })
+
+
+    function displayWinner(winner) {
+    const winnerScreen = document.getElementById('winnerScreen');
+    const winnerText = document.getElementById('winnerText');
+
+    winnerText.textContent = winner + " Wins!";
+    winnerScreen.style.display = "block";
+
+    // Hide the winner screen after a few seconds or when the user clicks anywhere
+    setTimeout(() => {
+        winnerScreen.style.display = "none";
+    }, 5000); // Adjust the timing as needed
+}
+
+
+
+    socket.on("find", (e) => {
+
+
+        let allPlayersArray = e.allPlayers
+        console.log("html",allPlayersArray)
+
+        if (name != '') {
+            document.getElementById("userCont").style.display = "block"
+            document.getElementById("oppNameCont").style.display = "block"
+            document.getElementById("valueCont").style.display = "block"
+            document.getElementById("loading").style.display = "none"
+            document.getElementById("name").style.display = "none"
+            document.getElementById("find").style.display = "none"
+            document.getElementById("enterName").style.display = "none"
+            document.getElementById("bigcont").style.display = "block"
+            document.getElementById("whosTurn").style.display = "block"
+            document.getElementById("whosTurn").innerText = "X's Turn"
+
+        }
+
+        let oppName
+        let value
+
+        const foundObject = allPlayersArray.find(obj => obj.p1.p1name == `${name}` || obj.p2.p2name == `${name}`);
+        foundObject.p1.p1name == `${name}` ? oppName = foundObject.p2.p2name : oppName = foundObject.p1.p1name
+        foundObject.p1.p1name == `${name}` ? value = foundObject.p1.p1value : value = foundObject.p2.p2value
+
+        document.getElementById("oppName").innerText = oppName
+        document.getElementById("value").innerText = value
+
+
+    })
+
+    document.querySelectorAll(".btn").forEach(e => {
+    e.addEventListener("click", function () {
+        // Check if it's the player's turn
+        let value = document.getElementById("value").innerText;
+        if (currentPlayer === value) {
+            e.innerText = value;
+            socket.emit("playing", { value: value, id: e.id, name: name });
+        } else {
+            alert("It's not your turn!");
+        }
+    });
+});
+    let currentPlayer = "X";
+
+    socket.on("playing", (e) => {
+    const foundObject = e.allPlayers.find(obj => obj.p1.p1name === name || obj.p2.p2name === name);
+
+    p1id = foundObject.p1.p1move;
+    p2id = foundObject.p2.p2move;
+
+    // Update turn
+    currentPlayer = (foundObject.sum % 2 === 0) ? "O" : "X";
+    document.getElementById("whosTurn").innerText = `${currentPlayer}'s Turn`;
+
+    // Update board
+    if (p1id) {
+        document.getElementById(p1id).innerText = "X";
+        document.getElementById(p1id).disabled = true;
+        document.getElementById(p1id).style.color = "black";
+        document.getElementById(p1id).style.backgroundColor="green";
+        
+    }
+    if (p2id) {
+        document.getElementById(p2id).innerText = "O";
+        document.getElementById(p2id).disabled = true;
+        document.getElementById(p2id).style.color = "black";
+        document.getElementById(p2id).style.backgroundColor="red";
+        // document.getElementById(p1id).style.backgroundImage = "url('images.png')";
+
+    }
+
+    check(name, foundObject.sum);
+});
+
+
+    function check(name, sum) {
+
+
+        document.getElementById("btn1").innerText == '' ? b1 = "a" : b1 = document.getElementById("btn1").innerText
+        document.getElementById("btn2").innerText == '' ? b2 = "b" : b2 = document.getElementById("btn2").innerText
+        document.getElementById("btn3").innerText == '' ? b3 = "c" : b3 = document.getElementById("btn3").innerText
+        document.getElementById("btn4").innerText == '' ? b4 = "d" : b4 = document.getElementById("btn4").innerText
+        document.getElementById("btn5").innerText == '' ? b5 = "e" : b5 = document.getElementById("btn5").innerText
+        document.getElementById("btn6").innerText == '' ? b6 = "f" : b6 = document.getElementById("btn6").innerText
+        document.getElementById("btn7").innerText == '' ? b7 = "g" : b7 = document.getElementById("btn7").innerText
+        document.getElementById("btn8").innerText == '' ? b8 = "h" : b8 = document.getElementById("btn8").innerText
+        document.getElementById("btn9").innerText == '' ? b9 = "i" : b9 = document.getElementById("btn9").innerText
+
+
+        if ((b1 == b2 && b2 == b3) || (b4 == b5 && b5 == b6) || (b7 == b8 && b8 == b9) || (b1 == b4 && b4 == b7) || (b2 == b5 && b5 == b8) || (b3 == b6 && b6 == b9) || (b1 == b5 && b5 == b9) || (b3 == b5 && b5 == b7)) {
+
+            socket.emit("gameOver", { name: name })
+
+            setTimeout(() => {
+
+                // sum % 2 == 0 ? alert("X WON !!") : alert("O WON !!")
+                sum % 2 == 0 ? displayWinner("X WON !!") : displayWinner("O WON !!") 
+
+                setTimeout(() => {
+                    location.reload()
+
+                }, 2000)
+
+            }, 100)
+
+        }
+
+        else if (sum == 10) {
+            socket.emit("gameOver", { name: name })
+
+            setTimeout(() => {
+
+                alert("DRAW!!")
+
+                setTimeout(() => {
+                    location.reload()
+
+                }, 2000)
+
+            }, 100)
+        }
+    }
+
+
+
+</script>
+
+</html>
